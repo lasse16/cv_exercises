@@ -1,3 +1,8 @@
+# Solution by 
+# Emilio Brambilla
+# Moritz Lahann
+# Lasse Haffke
+
 from batch_file_reader import BatchFileReader
 from batch_file_writer import BatchFileWriter
 import numpy as np
@@ -19,6 +24,7 @@ def main():
     trained_histograms = read_in_histograms(project_folder, train_file_folders)
     test_histograms = read_in_histograms(project_folder, test_file_folders)
 
+    # Classify by closest euclidian distance
     classification = {}
     for test in test_histograms.items():
         nearest_neighbour = None
@@ -30,6 +36,7 @@ def main():
                 min_distance = dist
         classification[test[0]] = nearest_neighbour[0]
 
+    # Calculate accuracy
     correct_classified_counter = 0
     for classified in classification.items():
         if get_label(classified[0]) == get_label(classified[1]):
@@ -101,7 +108,6 @@ def get_colors_of_image_at(data, index):
     green = raw_data[1024:2048]
     blue = raw_data[2048:]
     return {"red": red, "green": green, "blue": blue}
-
 
 def get_index_of(data, label, max):
     res = []
