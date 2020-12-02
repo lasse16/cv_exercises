@@ -12,6 +12,7 @@ import os
 test_batch = "/home/lasse/src/cv_exercises/cv_ex01_01/cifar-10-batches-py/test_batch"
 train_batch = "/home/lasse/src/cv_exercises/cv_ex01_01/cifar-10-batches-py/data_batch_1"
 project_folder = "/home/lasse/src/cv_exercises/cv_ex01_01/"
+histogram_output_folder = "histograms"
 
 
 def main():
@@ -57,11 +58,10 @@ def read_in_histograms(project_folder, sub_directories):
     histograms = {}
     reader = BatchFileReader()
     for train_file in sub_directories:
-        train_file_folder_path = os.path.join(project_folder, train_file)
-        for root, dirs, files in os.walk(train_file_folder_path):
-            for file in files:
-                file_full_path = os.path.join(root, file)
-                histograms[file_full_path] = reader.read(file_full_path)
+        train_file_folder_path = os.path.join(project_folder, histogram_output_folder, train_file)
+        for file in os.listdir(train_file_folder_path):
+            file_full_path = os.path.join(train_file_folder_path, file)
+            histograms[file_full_path] = reader.read(file_full_path)
     return histograms
 
 
@@ -81,7 +81,7 @@ def save_histogram(indexes, data, class_name):
     for index in indexes:
         img_gray = convert_to_grayscale(get_colors_of_image_at(data, index))
         weights, bins = calculate_histogram(img_gray)
-        writer.write(weights, os.path.join(project_folder, f"histograms/{class_name}/{index}"))
+        writer.write(weights, os.path.join(project_folder, histogram_output_folder, f"{class_name}/{index}"))
 
 
 def calculate_histogram(grayscaled_image):
