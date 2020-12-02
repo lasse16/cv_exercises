@@ -3,8 +3,6 @@
 # Moritz Lahann
 # Lasse Haffke
 
-from batch_file_reader import BatchFileReader
-from batch_file_writer import BatchFileWriter
 import numpy as np
 import matplotlib.pyplot as plt
 import os
@@ -118,6 +116,23 @@ def get_index_of(data, label, max):
                 break
     return res
 
+# IO classes
+class BatchFileReader(object):
+
+    def read(self, file_path):
+        import pickle
+        with open(file_path, 'rb') as fo:
+            dict = pickle.load(fo, encoding='bytes')
+            return dict
+
+class BatchFileWriter(object):
+    def write(self, obj, path):
+        import pickle
+        import os
+        dirname = os.path.dirname(path)
+        os.makedirs(dirname,exist_ok=True)
+        with open(path, "wb") as file:
+            pickle.dump(obj, file)
 
 if __name__ == "__main__":
     main()
