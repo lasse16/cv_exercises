@@ -29,6 +29,7 @@ def main():
         nearest_neighbour = None
         min_distance = float("inf")
         for trained in trained_histograms.items():
+            # numpy function for the euclidean distance
             dist = np.linalg.norm(test[1] - trained[1])
             if dist < min_distance:
                 nearest_neighbour = trained
