@@ -38,8 +38,8 @@ def main():
 
     # Calculate accuracy
     correct_classified_counter = 0
-    for classified in classification.items():
-        if get_label(classified[0]) == get_label(classified[1]):
+    for tested_histogram, nearest_neighbour in classification.items():
+        if get_label(tested_histogram) == get_label(nearest_neighbour):
             correct_classified_counter += 1
     classifier_accuracy = correct_classified_counter / len(classification)
     print("classification accuracy = {}".format(classifier_accuracy))
