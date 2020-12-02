@@ -1,4 +1,4 @@
-#Group Members: Emilio Brambilla, Moritz Lahann, asse Haffke
+#Group Members: Emilio Brambilla, Moritz Lahann, Lasse Haffke
 from shutil import copy
 import cv2 as cv
 import numpy as np
