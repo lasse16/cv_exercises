@@ -10,7 +10,7 @@ import os
 test_batch = "/home/lasse/src/cv_exercises/cv_ex01_01/cifar-10-batches-py/test_batch"
 train_batch = "/home/lasse/src/cv_exercises/cv_ex01_01/cifar-10-batches-py/data_batch_1"
 project_folder = "/home/lasse/src/cv_exercises/cv_ex01_01/"
-histogram_output_folder = "histograms"
+histogram_output_folder = "histograms/bin_5"
 
 
 def main():
@@ -18,12 +18,40 @@ def main():
     train_file_folders = ["automobile", "deer", "ship"]
     label_numbers = [1, 4, 8]
 
-    create_and_save_histogram(test_batch, label_numbers, test_file_folders, 10)
-    create_and_save_histogram(train_batch, label_numbers, train_file_folders, 30)
+    # create_and_save_histogram(test_batch, label_numbers, test_file_folders, 10)
+    # create_and_save_histogram(train_batch, label_numbers, train_file_folders, 30)
     trained_histograms = read_in_histograms(project_folder, train_file_folders)
     test_histograms = read_in_histograms(project_folder, test_file_folders)
 
-    # Classify by closest euclidian distance
+    classification_results = classify_against(test_histograms, trained_histograms)
+    classifier_accuracy = calculate_accuracy(classification_results)
+    print("classification accuracy = {}".format(classifier_accuracy))
+
+
+def create_and_save_histogram(batch_path, label_numbers, output_directories, max_images):
+    reader = BatchFileReader()
+    test_data = reader.read(batch_path)
+    for number, name in zip(label_numbers, output_directories):
+        data = get_index_of(test_data[b"labels"], number, max_images)
+        save_histogram(data, test_data[b"data"], f"{name}")
+
+
+def save_histogram(indexes, data, class_name):
+    writer = BatchFileWriter()
+    for index in indexes:
+        img_gray = convert_to_grayscale(get_colors_of_image_at(data, index))
+        weights, bins = calculate_histogram(img_gray)
+        writer.write(weights, os.path.join(project_folder, histogram_output_folder, f"{class_name}/{index}"))
+
+
+def calculate_histogram(grayscaled_image):
+    bin_size = 5
+    bins = np.arange(0, 256, bin_size)
+    weights, bins, _ = plt.hist(grayscaled_image, bins=bins)
+    return weights, bins
+
+
+def classify_against(test_histograms,trained_histograms):
     classification = {}
     for test in test_histograms.items():
         nearest_neighbour = None
@@ -35,22 +63,16 @@ def main():
                 nearest_neighbour = trained
                 min_distance = dist
         classification[test[0]] = nearest_neighbour[0]
+    return classification
 
-    # Calculate accuracy
+
+def calculate_accuracy(results):
     correct_classified_counter = 0
-    for tested_histogram, nearest_neighbour in classification.items():
+    for tested_histogram, nearest_neighbour in results.items():
         if get_label(tested_histogram) == get_label(nearest_neighbour):
             correct_classified_counter += 1
-    classifier_accuracy = correct_classified_counter / len(classification)
-    print("classification accuracy = {}".format(classifier_accuracy))
-
-
-def create_and_save_histogram(batch_path, label_numbers, output_directories, max_images):
-    reader = BatchFileReader()
-    test_data = reader.read(batch_path)
-    for number, name in zip(label_numbers, output_directories):
-        data = get_index_of(test_data[b"labels"], number, max_images)
-        save_histogram(data, test_data[b"data"], f"{name}")
+    classifier_accuracy = correct_classified_counter / len(results)
+    return classifier_accuracy
 
 
 def read_in_histograms(project_folder, sub_directories):
@@ -75,19 +97,9 @@ def get_label(path):
         return -1
 
 
-def save_histogram(indexes, data, class_name):
-    writer = BatchFileWriter()
-    for index in indexes:
-        img_gray = convert_to_grayscale(get_colors_of_image_at(data, index))
-        weights, bins = calculate_histogram(img_gray)
-        writer.write(weights, os.path.join(project_folder, histogram_output_folder, f"{class_name}/{index}"))
 
 
-def calculate_histogram(grayscaled_image):
-    bin_size = 5
-    bins = np.arange(0, 255, bin_size)
-    weights, bins, _ = plt.hist(grayscaled_image, bins=bins)
-    return weights, bins
+
 
 
 def convert_to_grayscale(image_dictionary):
@@ -99,6 +111,7 @@ def convert_to_grayscale(image_dictionary):
         gray_value = (float(green[pixel]) + float(red[pixel]) + float(blue[pixel])) / 3
         grayscaled += [gray_value]
     return grayscaled
+
 
 
 def get_colors_of_image_at(data, index):
