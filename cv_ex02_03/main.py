@@ -5,7 +5,28 @@ Task 3
 Group members:  Emilio Brambilla, Lasse Haffke, Moritz Lahann
 """
 
-# TODO: WRITING
+"""
+Differences to integral image approach:
+The integral image approach with center-surround and surround-center
+filters difference-of-boxes (DoB) approximates the
+difference-of-gaussian (DoG) approach we used here.
+Filtering is done on one image resolution vs. multiple
+in pyramids. There is effectively only one filter size
+used in the integral image approach. Since filters respond
+to size of features in the image, this means we may lose out 
+on features that our filter size is too large or small for.
+Image pyramids essentially emulate different filter sizes by
+downsampling the image progressively.
+
+Advantages of using image pyramids:
+Image pyramids use multiple image resolutions (progressively more smoothed
+and downsampled). This means both large-scale
+and small-scale features are taken into account.
+They are also computationally less expensive than using
+large filters and filter with multiple sizes.
+Smoothing and downsampling are cheaper operations than
+large convolutions.
+"""
 
 # Imports
 from skimage.transform.pyramids import pyramid_gaussian
