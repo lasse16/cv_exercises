@@ -1,3 +1,5 @@
+# Group: Emilio Brambilla, Lasse Haffke, Moritz Lahann
+
 from skimage.transform import AffineTransform, warp
 from skimage.feature import ORB, match_descriptors, plot_matches
 from skimage.io import imread
@@ -46,6 +48,6 @@ if __name__ == "__main__":
     fig, ax = plt.subplots()
     plot_matches(ax, im, im2, keypoints_1, keypoints_2, matches)
     ax.axis("off")
-    ax.set_title("ORB matches of original image (left) vs. transformed image (right)")
+    ax.set_title(
+        "ORB matches of original image (left) vs. transformed image (right)")
     plt.show()
-
